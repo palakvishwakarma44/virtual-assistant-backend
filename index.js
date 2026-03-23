@@ -35,7 +35,9 @@ import cors from "cors"
 app.use(cors({
   origin: "https://virtual-assistant-frontend-ten.vercel.app",
   credentials: true
-}))
+}));
+
+app.options("*", cors()); // 🔥 IMPORTANT
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
