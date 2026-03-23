@@ -30,13 +30,12 @@ app.use((req, res, next) => {
 //     credentials: true
 // }));
 
-import cors from "cors";
+import cors from "cors"
 
 app.use(cors({
-  origin: "http://localhost:5173",
-  methods: "GET,POST,PUT,DELETE",
+  origin: "https://virtual-assistant-frontend-ten.vercel.app",
   credentials: true
-}));
+}))
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
