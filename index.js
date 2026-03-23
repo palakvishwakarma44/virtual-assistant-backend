@@ -1,94 +1,61 @@
-import dotenv from "dotenv";
-dotenv.config();
 
-import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
+import dotenv from "dotenv"
+dotenv.config()
+import express from "express"
 
-import connectDb from "./config/db.js";
-import authRouter from "./routes/auth.routes.js";
-import userRouter from "./routes/user.routes.js";
-import { askToAssistant } from "./controllers/user.controllers.js";
-import isAuth from "./middlewares/isAuth.js";
+import connectDb from "./config/db.js"
+import authRouter from "./routes/auth.routes.js"
+//import cors from "cors"
+import cookieParser from "cookie-parser"
+import userRouter from "./routes/user.routes.js"
 
-const app = express();
-
-/* ---------------- Middlewares ---------------- */
-
-app.use(express.json());
-app.use(cookieParser());
-
-/* ---------------- Request Logger ---------------- */
+const app = express()
 
 app.use((req, res, next) => {
-  res.on("finish", () => {
-    console.log(
-      `!!!DEBUG!!! ${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Status: ${res.statusCode}`
-    );
+  const start = Date.now();
+  res.on('finish', () => {
+    console.log(`!!!DEBUG!!! ${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Status: ${res.statusCode}`);
   });
   next();
 });
 
-/* ---------------- CORS ---------------- */
+// app.use(cors({
+//     origin:["http://localhost:5173","https://localhost:5174"],
+//     credentials:true
+// }))
+// app.use(cors({
+//     origin: 
+//         "https://localhost:5173",
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "https://your-frontend-domain.com" // replace later
-];
+//     credentials: true
+// }));
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+import cors from "cors";
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true
+}));
 
-      return callback(new Error("CORS Not Allowed"));
-    },
-    credentials: true
-  })
-);
-
-/* ---------------- ROOT ROUTE (FIX FOR RENDER 404) ---------------- */
-
-app.get("/", (req, res) => {
-  res.json({
-    status: "running",
-    message: "🚀 Virtual Assistant Backend is Live",
-    time: new Date().toISOString()
-  });
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
 });
 
-/* ---------------- Health Check ---------------- */
+const port = process.env.PORT || 5000
 
-app.get("/api/ping", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "API is working",
-    time: new Date().toISOString()
-  });
-});
+app.use(cookieParser())
+app.use(express.json())
+app.get("/api/ping", (req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
+import { askToAssistant } from "./controllers/user.controllers.js"
+import isAuth from "./middlewares/isAuth.js"
 
-/* ---------------- Routes ---------------- */
+app.use("/api/auth", authRouter)
+app.use("/api/user", userRouter)
+app.post("/asktoassistant", isAuth, askToAssistant) // Alias for old/direct calls
 
-app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
-
-app.post("/api/assistant/ask", isAuth, askToAssistant);
-
-/* ---------------- Server Start ---------------- */
-
-const port = process.env.PORT || 5000;
-
-connectDb()
-  .then(() => {
-    app.listen(port, () => {
-      console.log(`🚀 Server running on PORT ${port}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ DB connection failed:", err);
-  });
+app.listen(port, () => {
+  connectDb()
+  console.log("server started")
+})
