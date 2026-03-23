@@ -1,0 +1,16 @@
+Testing generate image...
+generate image response: {
+  "type": "generate-image",
+   "actionTarget": "iron man",
+   "userInput": "generate image of iron man",
+   "response": "Banaungi ek iron man ki image. Iski taiyari kar rahi hoon. Aapko ek iron man ki image dikhane ki zaroorat hai. Kya aapko koi vishesh cheezon ka dhyan rakhna hai? Kya aapko iron man ko koi vishesh pose mein dikhna hai? Kya aapko koi vishesh background ya color chahiye? Mujhe aapke saath baat karna hai aur pata lagana hai ki aapko kya pasand hai!"
+}
+
+Testing pdf summary...
+pdf summary response: {
+  "type": "summarize-pdf",
+   "actionTarget": "",
+   "userInput": "summarize the uploaded pdf",
+   "response": "Kya aapka pdf taiyaar hai? Main use kar sakta hoon isska ek samvedanmak abhyaas banana. Kripaya pdf ko uplabdh karein. Main uski sabhi mahatvapurn jankariyon ko samajhne ki koshish karunga aur aapko ek samvedanmak abhyaas deta hoon."
+}
+

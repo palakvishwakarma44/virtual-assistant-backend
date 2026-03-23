@@ -1,0 +1,13 @@
+[2026-03-19T18:18:00.920Z] --- START GENERATE IMAGE ---
+[2026-03-19T18:18:00.923Z] Prompt: apple
+[2026-03-19T18:18:00.925Z] URL: https://image.pollinations.ai/prompt/apple?nologo=true
+[2026-03-19T18:18:00.925Z] Fetching from Pollinations...
+[2026-03-19T18:18:01.871Z] CRITICAL ERROR: Request failed with status code 500
+[2026-03-19T18:18:01.873Z] Error response status: 500
+[2026-03-19T18:23:33.081Z] --- START GENERATE IMAGE ---
+[2026-03-19T18:23:33.082Z] Prompt: apple
+[2026-03-19T18:23:33.085Z] URL: https://image.pollinations.ai/prompt/apple?nologo=true&nofeed=true
+[2026-03-19T18:23:33.086Z] Fetching from Pollinations with stealth headers...
+[2026-03-19T18:23:34.126Z] CRITICAL ERROR: Request failed with status code 500
+[2026-03-19T18:23:34.129Z] Error response status: 500
+[2026-03-19T18:23:34.133Z] Error response body: {"error":"Internal Server Error","message":"fetch failed","debug":null,"timingInfo":[{"step":"Request received and queued.","timestamp":0},{"step":"Start generating job","timestamp":0},{"step":"Start processing","timestamp":0}],"requestId":"4j9w8o","requestParameters":{"prompt":"apple","width":768,"height":768,"seed":42,"model":"sana","enhance":false,"nologo":true,"negative_prompt":"undefined","nofeed":true,"safe":false,"quality":"medium","image":[],"transparent":false},"queueInfo":null}
