@@ -18,6 +18,8 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+/* ---------------- Request Logger ---------------- */
+
 app.use((req, res, next) => {
   res.on("finish", () => {
     console.log(
@@ -27,36 +29,55 @@ app.use((req, res, next) => {
   next();
 });
 
-/* ---------------- CORS (PRODUCTION SAFE) ---------------- */
+/* ---------------- CORS ---------------- */
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://your-frontend-domain.com" // change this later
+  "https://your-frontend-domain.com" // replace later
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, true); // temporarily allow all (safer for debugging deploy)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      return callback(new Error("CORS Not Allowed"));
     },
     credentials: true
   })
 );
 
-/* ---------------- Routes ---------------- */
+/* ---------------- ROOT ROUTE (FIX FOR RENDER 404) ---------------- */
 
-app.get("/api/ping", (req, res) =>
-  res.json({ status: "ok", time: new Date().toISOString() })
-);
+app.get("/", (req, res) => {
+  res.json({
+    status: "running",
+    message: "🚀 Virtual Assistant Backend is Live",
+    time: new Date().toISOString()
+  });
+});
+
+/* ---------------- Health Check ---------------- */
+
+app.get("/api/ping", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "API is working",
+    time: new Date().toISOString()
+  });
+});
+
+/* ---------------- Routes ---------------- */
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-app.post("/asktoassistant", isAuth, askToAssistant);
+
+app.post("/api/assistant/ask", isAuth, askToAssistant);
 
 /* ---------------- Server Start ---------------- */
 
