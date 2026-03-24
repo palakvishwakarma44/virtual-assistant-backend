@@ -26,7 +26,13 @@ app.use(cors({
   credentials: true
 }));
 
-app.options(/.*/, cors()); // preflight fix
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+ // preflight fix
 
 const port = process.env.PORT || 5000
 
