@@ -36,8 +36,7 @@ app.use(cors({
   origin: "https://virtual-assistant-frontend-ten.vercel.app",
   credentials: true
 }));
-
-app.options("*", cors()); // 🔥 IMPORTANT
+app.options("/*", cors());// 🔥 IMPORTANT
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
@@ -54,7 +53,7 @@ import isAuth from "./middlewares/isAuth.js"
 
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
-app.post("/asktoassistant", isAuth, askToAssistant) // Alias for old/direct calls
+app.post("/api/user/asktoassistant", isAuth, askToAssistant) // Alias for old/direct calls
 
 app.listen(port, () => {
   connectDb()
