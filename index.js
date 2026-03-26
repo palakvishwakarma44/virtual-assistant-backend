@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 
 // ✅ SINGLE CLEAN CORS SETUP
 app.use(cors({
-  origin: "https://virtual-assistant-frontend-ten.vercel.app",
+  origin: ["https://virtual-assistant-frontend-ten.vercel.app", "http://localhost:5173"],
   credentials: true
 }));
 
