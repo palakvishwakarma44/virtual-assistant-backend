@@ -1,7 +1,7 @@
 // Quick test: login and call generate-image
 import axios from "axios";
 
-const BASE = "http://localhost:8000";
+const BASE = "https://virtual-assistant-backend-xd3m.onrender.com";
 
 async function run() {
   // 1. Login
@@ -9,16 +9,16 @@ async function run() {
     email: "test@gmail.com",
     password: "12345"
   }, { withCredentials: true });
-  
+
   const cookie = loginRes.headers['set-cookie']?.[0] || '';
   console.log("Login status:", loginRes.status);
-  
+
   // 2. Call generate-image
-  const imgRes = await axios.post(`${BASE}/api/user/generate-image`, 
+  const imgRes = await axios.post(`${BASE}/api/user/generate-image`,
     { prompt: "red cat" },
     { headers: { Cookie: cookie, 'Content-Type': 'application/json' } }
   );
-  
+
   const url = imgRes.data?.imageUrl || "";
   const errRes = imgRes.data?.response || "";
   console.log("Status:", imgRes.status);
