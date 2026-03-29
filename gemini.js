@@ -93,7 +93,15 @@ Strictly raw JSON. No markdown blocks.`;
         }
     }
 
-    return null;
+    // ==========================================
+    // TOTAL FAIL-SAFE (NO AI WORKING)
+    // ==========================================
+    console.error("🌋 CRITICAL: All AI providers failed. Returning emergency fallback JSON.");
+    return JSON.stringify({
+        type: "general",
+        userInput: command,
+        response: "I'm currently having trouble reaching my brain (AI services). Master, please check if your Groq or Gemini API keys are correctly set in the backend environment."
+    });
 };
 
 export default geminiResponse;
