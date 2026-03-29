@@ -22,7 +22,11 @@ app.use((req, res, next) => {
 
 // ✅ SINGLE CLEAN CORS SETUP
 app.use(cors({
-  origin: ["https://virtual-assistant-frontend-ten.vercel.app", "http://localhost:5173"],
+  origin: [
+    "https://virtual-assistant-frontend-ten.vercel.app",
+    "https://virtual-assistant-frontend-qxbq.vercel.app", // 👈 ADD THIS
+    "http://localhost:5173"
+  ],
   credentials: true
 }));
 
@@ -32,7 +36,7 @@ app.use((req, res, next) => {
   }
   next();
 });
- // preflight fix
+// preflight fix
 
 const port = process.env.PORT || 5000
 
@@ -46,9 +50,6 @@ app.get("/api/ping", (req, res) =>
 // routes
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
-
-// direct endpoint
-app.post("/api/user/asktoassistant", isAuth, askToAssistant)
 
 app.listen(port, () => {
   connectDb()
