@@ -177,37 +177,18 @@ Return ONLY this JSON format:
 
       console.log("Processed Gemini Result:", gemResult);
       const type = gemResult.type
-
-      // 🔥 Handle image generation directly here (using Pollinations AI)
+      // 🔥 Generate image via Pollinations AI (direct URL — browser loads image, no server download)
       if (type === "generate-image") {
          const prompt = gemResult.actionTarget || command;
          const seed = Math.floor(Math.random() * 9999999);
          const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&seed=${seed}&model=flux`;
-         
-         try {
-            const pResponse = await axios.get(pollinationsUrl, {
-               responseType: 'arraybuffer',
-               timeout: 30000,
-               headers: { 'User-Agent': 'Mozilla/5.0' }
-            });
-            const pContentType = pResponse.headers['content-type'] || 'image/jpeg';
-            const pBase64 = Buffer.from(pResponse.data, 'binary').toString('base64');
-            const imageUrl = `data:${pContentType};base64,${pBase64}`;
-            
-            return res.json({
-               type: "generate-image",
-               image: imageUrl,
-               response: gemResult.response
-            });
-         } catch (err) {
-            console.error("Generate image direct failed:", err.message);
-            return res.json({
-               type: "general",
-               userInput: command,
-               response: "Sorry, I couldn't generate the image right now due to server overload. Please try again."
-            });
-         }
-      }
+         console.log(`[generateImage] Sending URL for prompt: "${prompt}"`);
+         return res.json({
+            type: "generate-image",
+            image: pollinationsUrl,
+            response: gemResult.response || `Here's your image of ${prompt}!`
+         });
+      }      
 
       // Handle save-memory (Productivity & Personalization updates)
       if (type === "save-memory") {
