@@ -1,7 +1,7 @@
 import Groq from "groq-sdk";
 
-const geminiResponse = async (command, assistantName, userName, userMemory, userLang = 'en-US') => {
-    console.log("!!!DEBUG!!! AI Response reached with command:", command);
+const geminiResponse = async (command, assistantName, userName, userMemory, userLang = 'en-US', timezone = 'UTC') => {
+    console.log("!!!DEBUG!!! AI Response reached with command:", command, "Timezone:", timezone);
 
     // =========================
     // DUMMY MODE (TESTING)
@@ -74,15 +74,20 @@ Guidelines for JSON:
 - "todo-add": "add buy milk to my todolist", "remind me to wash the car". actionTarget: "buy milk"
 - "todo-show": "show my todolist", "what are my tasks?", "shoe my todolist". actionTarget: (empty)
 - "todo-remove": "remove buy milk from todolist". actionTarget: "buy milk"
-- "generate-image": Use this for ANY request to create, generate, imagine, visualize, or show an image/photo/picture. Examples: "generate a cat", "make an image of a red car", "show me a photo of space", "imagine a futuristic city", "create image: apple", "ek photo banao", "image create karo", "photo dikhao", "banao image", "ek picture dikhao". actionTarget MUST be the exact thing/description to visualize.
+- "generate-image": Use this for ANY request to create, generate, imagine, visualize, draw, or show an image/photo/picture/logo/art. Examples: "generate a cat", "make an image of a red car", "show me a photo of space", "imagine a futuristic city", "photo dikhao", "image create karo", "drawing banao", "picture dikhaye". actionTarget MUST be the exact thing/description to visualize.
 - "analyze-image": Use this ONLY if the user says "what is in this image?", "explain this photo", "describe this picture", or similar.
 - "summarize-pdf": Use this ONLY if the user explicitly asks to summarize or read an uploaded PDF.
 - If the user's intent is ambiguous but mentions "image", "photo", or "picture" along with a description, PREFER "generate-image".
 - Use "general" ONLY if none of the specific action types above match.
 - Never include markdown code blocks like \`\`\`json. Just raw JSON.`;
 
-    const currentTime = new Date().toLocaleString();
-    const userPrompt = `Current Date & Time: ${currentTime}\nCommand from ${userName}: "${command}"`;
+    let currentTime;
+    try {
+        currentTime = new Date().toLocaleString('en-US', { timeZone: timezone });
+    } catch (e) {
+        currentTime = new Date().toLocaleString();
+    }
+    const userPrompt = `Current Local Date & Time (${timezone}): ${currentTime}\nCommand from ${userName}: "${command}"`;
 
     // =========================
     // GROQ (LLaMA) CALL

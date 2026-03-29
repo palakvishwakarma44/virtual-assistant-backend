@@ -2,7 +2,7 @@ import uploadOnCloudinary from "../config/cloudinary.js"
 import geminiResponse from "../gemini.js";
 import axios from "axios";
 import User from "../models/user.model.js"
-import moment from "moment"
+import moment from "moment-timezone"
 import fs from "fs";
 import path from "path";
 import Groq from "groq-sdk";
@@ -67,8 +67,8 @@ export const updateAssistant = async (req, res) => {
 export const askToAssistant = async (req, res) => {
    try {
       console.log("Full Request Body:", req.body);
-      const { command, userLang } = req.body
-      console.log("Extracted Command:", command, "User Lang:", userLang);
+      const { command, userLang, timezone } = req.body
+      console.log("Extracted Command:", command, "User Lang:", userLang, "Timezone:", timezone);
       const user = await User.findById(req.userId);
       if (command) {
          user?.history?.push(command);
@@ -155,15 +155,17 @@ Return ONLY this JSON format:
             result = await geminiResponse(command, assistantName, userName, userMemory, userLang);
          }
       } else {
-         result = await geminiResponse(command, assistantName, userName, userMemory, userLang);
+         result = await geminiResponse(command, assistantName, userName, userMemory, userLang, timezone);
       }
 
       if (!result) {
+         console.error("!!!ERROR!!! AI returned null/empty result.");
          return res.status(500).json({ response: "AI failed to respond. Please check your API keys and internet connection." });
       }
 
-      console.log("!!!DEBUG!!! Parsing AI output:", result);
+      console.log("!!!DEBUG!!! Raw AI Response:", result);
       const gemResult = extractJSON(result);
+      console.log("!!!DEBUG!!! Extracted JSON:", gemResult);
 
       if (!gemResult) {
          console.error("!!!DEBUG!!! Result was not valid JSON. RAW:", result);
@@ -176,7 +178,16 @@ Return ONLY this JSON format:
       }
 
       console.log("Processed Gemini Result:", gemResult);
-      const type = gemResult.type
+      let type = gemResult.type?.trim().toLowerCase();
+
+      // REGEX fallback for image generation (Catch-all for stability)
+      const imgKeywords = /generate|make|imagine|visualize|create|draw|photo|picture|image|sketch/i;
+      const isImgIntent = imgKeywords.test(command.toLowerCase());
+      if (isImgIntent && type !== "generate-image" && type !== "analyze-image" && type !== "summarize-pdf") {
+         console.log("!!!DEBUG!!! Forcing generate-image type based on keyword match.");
+         type = "generate-image";
+      }
+
       // 🔥 Generate image via Pollinations AI (direct URL — browser loads image, no server download)
       if (type === "generate-image") {
          const prompt = gemResult.actionTarget || command;
@@ -209,25 +220,25 @@ Return ONLY this JSON format:
             return res.json({
                type,
                userInput: gemResult.userInput,
-               response: `current date is ${moment().format("YYYY-MM-DD")}`
+               response: `current date is ${moment().tz(timezone || "UTC").format("YYYY-MM-DD")}`
             });
          case 'get-time':
             return res.json({
                type,
                userInput: gemResult.userInput,
-               response: `current time is ${moment().format("hh:mm A")}`
+               response: `current time is ${moment().tz(timezone || "UTC").format("hh:mm A")}`
             });
          case 'get-day':
             return res.json({
                type,
                userInput: gemResult.userInput,
-               response: `today is ${moment().format("dddd")}`
+               response: `today is ${moment().tz(timezone || "UTC").format("dddd")}`
             });
          case 'get-month':
             return res.json({
                type,
                userInput: gemResult.userInput,
-               response: `today is ${moment().format("MMMM")}`
+               response: `today is ${moment().tz(timezone || "UTC").format("MMMM")}`
             });
          case 'google-search':
          case 'youtube-search':

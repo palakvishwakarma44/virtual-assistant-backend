@@ -51,9 +51,6 @@ app.get("/api/ping", (req, res) =>
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 
-// direct endpoint
-app.post("/api/user/asktoassistant", isAuth, askToAssistant)
-
 app.listen(port, () => {
   connectDb()
   console.log("server started")
