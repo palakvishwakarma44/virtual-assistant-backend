@@ -192,9 +192,9 @@ Return ONLY this JSON format:
       if (type === "generate-image") {
          const prompt = gemResult.actionTarget || command;
          const seed = Math.floor(Math.random() * 9999999);
-         // 🚀 Using official High-Performance Pollinations endpoint
-         const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
-         console.log(`[generateImage] Robust URL generated: "${pollinationsUrl}"`);
+         // 🚀 Standard official Pollinations endpoint (Robust & Fast)
+         const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=1`;
+         console.log(`[generateImage] Final stable URL: "${pollinationsUrl}"`);
          return res.json({
             type: "generate-image",
             image: pollinationsUrl,
