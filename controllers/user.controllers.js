@@ -178,31 +178,25 @@ Return ONLY this JSON format:
       console.log("Processed Gemini Result:", gemResult);
       const type = gemResult.type
 
-      // 🔥 Handle image generation directly here
+      // 🔥 Handle image generation directly here (using Pollinations AI)
       if (type === "generate-image") {
          const prompt = gemResult.actionTarget || command;
-         const modelId = "black-forest-labs/FLUX.1-schnell";
-         const url = `https://router.huggingface.co/hf-inference/models/${modelId}`;
+         const seed = Math.floor(Math.random() * 9999999);
+         const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&seed=${seed}&model=flux`;
          
          try {
-            const hfRes = await fetch(url, {
-               method: "POST",
-               headers: {
-                  "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-                  "Content-Type": "application/json"
-               },
-               body: JSON.stringify({ inputs: prompt })
+            const pResponse = await axios.get(pollinationsUrl, {
+               responseType: 'arraybuffer',
+               timeout: 30000,
+               headers: { 'User-Agent': 'Mozilla/5.0' }
             });
-
-            if (!hfRes.ok) throw new Error("HuggingFace API failed");
-            
-            const buffer = await hfRes.arrayBuffer();
-            const pContentType = hfRes.headers.get('content-type') || 'image/jpeg';
-            const pBase64 = Buffer.from(buffer).toString('base64');
+            const pContentType = pResponse.headers['content-type'] || 'image/jpeg';
+            const pBase64 = Buffer.from(pResponse.data, 'binary').toString('base64');
+            const imageUrl = `data:${pContentType};base64,${pBase64}`;
             
             return res.json({
                type: "generate-image",
-               image: `data:${pContentType};base64,${pBase64}`,
+               image: imageUrl,
                response: gemResult.response
             });
          } catch (err) {
@@ -210,7 +204,7 @@ Return ONLY this JSON format:
             return res.json({
                type: "general",
                userInput: command,
-               response: "Sorry, I couldn't generate the image right now."
+               response: "Sorry, I couldn't generate the image right now due to server overload. Please try again."
             });
          }
       }
