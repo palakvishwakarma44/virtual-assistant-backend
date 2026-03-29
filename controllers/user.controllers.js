@@ -192,7 +192,8 @@ Return ONLY this JSON format:
       if (type === "generate-image") {
          const prompt = gemResult.actionTarget || command;
          const seed = Math.floor(Math.random() * 9999999);
-         const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&seed=${seed}&model=flux`;
+         // Simplified URL format for better stability
+         const pollinationsUrl = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=true`;
          console.log(`[generateImage] Sending URL for prompt: "${prompt}"`);
          return res.json({
             type: "generate-image",
