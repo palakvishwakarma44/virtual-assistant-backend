@@ -194,8 +194,8 @@ Return ONLY this JSON format:
          const seed = Math.floor(Math.random() * 9999999);
          const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=1`;
          
-         // 🛡️ Proxy URL construction: uses your own backend origin to avoid 3rd-party blocking
-         const proxyUrl = `${process.env.VITE_API_URL || "https://virtual-assistant-backend-xd3m.onrender.com"}/api/user/proxy-image?url=${encodeURIComponent(pollinationsUrl)}`;
+         // 🛡️ Proxy URL construction: uses your own backend origin dynamically
+         const proxyUrl = `${req.protocol}://${req.get('host')}/api/user/proxy-image?url=${encodeURIComponent(pollinationsUrl)}`;
          
          console.log(`[generateImage] Serving via Proxy: "${proxyUrl}"`);
          return res.json({
