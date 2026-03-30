@@ -194,13 +194,10 @@ Return ONLY this JSON format:
          const seed = Math.floor(Math.random() * 9999999);
          const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=1`;
          
-         // 🛡️ Proxy URL construction: uses your own backend origin dynamically
-         const proxyUrl = `${req.protocol}://${req.get('host')}/api/user/fetch-artwork?url=${encodeURIComponent(pollinationsUrl)}`;
-         
-         console.log(`[generateImage] Serving via Proxy: "${proxyUrl}"`);
+         console.log(`[generateImage] Serving Image Directly: "${pollinationsUrl}"`);
          return res.json({
             type: "generate-image",
-            image: proxyUrl,
+            image: pollinationsUrl,
             response: gemResult.response || `Here's your image of ${prompt}!`
          });
       }      
