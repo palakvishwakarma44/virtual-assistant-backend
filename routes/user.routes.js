@@ -8,13 +8,15 @@ import {
     summarizePdf,
     analyzeImage,
     generateImage,
-    deleteHistory
+    deleteHistory,
+    proxyImage
 } from "../controllers/user.controllers.js";
 import isAuth from "../middlewares/isAuth.js";
 import upload from "../middlewares/multer.js";
 
 const userRouter = express.Router();
 
+userRouter.get("/proxy-image", proxyImage); // No isAuth for speed (public proxy)
 userRouter.get("/current", isAuth, getCurrentUser);
 userRouter.post("/update", isAuth, upload.single("assistantImage"), updateAssistant);
 userRouter.post("/asktoassistant", isAuth, upload.single("image"), askToAssistant);
