@@ -195,7 +195,7 @@ Return ONLY this JSON format:
          const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=1`;
          
          // 🛡️ Proxy URL construction: uses your own backend origin dynamically
-         const proxyUrl = `${req.protocol}://${req.get('host')}/api/user/proxy-image?url=${encodeURIComponent(pollinationsUrl)}`;
+         const proxyUrl = `${req.protocol}://${req.get('host')}/api/user/fetch-artwork?url=${encodeURIComponent(pollinationsUrl)}`;
          
          console.log(`[generateImage] Serving via Proxy: "${proxyUrl}"`);
          return res.json({
