@@ -188,16 +188,19 @@ Return ONLY this JSON format:
          type = "generate-image";
       }
 
-      // 🔥 Generate image via Pollinations AI (direct URL — browser loads image, no server download)
+      // 🔥 Generate image via Proxy (Bypasses Browser Shields)
       if (type === "generate-image") {
          const prompt = gemResult.actionTarget || command;
          const seed = Math.floor(Math.random() * 9999999);
-         // 🚀 Standard official Pollinations endpoint (Robust & Fast)
          const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=1`;
-         console.log(`[generateImage] Final stable URL: "${pollinationsUrl}"`);
+         
+         // 🛡️ Proxy URL construction: uses your own backend origin to avoid 3rd-party blocking
+         const proxyUrl = `${process.env.VITE_API_URL || "https://virtual-assistant-backend-xd3m.onrender.com"}/api/user/proxy-image?url=${encodeURIComponent(pollinationsUrl)}`;
+         
+         console.log(`[generateImage] Serving via Proxy: "${proxyUrl}"`);
          return res.json({
             type: "generate-image",
-            image: pollinationsUrl,
+            image: proxyUrl,
             response: gemResult.response || `Here's your image of ${prompt}!`
          });
       }      
@@ -528,4 +531,19 @@ export const generateImage = async (req, res) => {
    }
 };
 
+export const proxyImage = async (req, res) => {
+   try {
+      const { url } = req.query;
+      if (!url) {
+         return res.status(400).send("URL parameter is missing");
+      }
+      
+      const response = await axios.get(url, { responseType: 'stream' });
+      res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
+      response.data.pipe(res);
+   } catch (error) {
+      console.error("Proxy image error:", error.message);
+      res.status(500).send("Error fetching image");
+   }
+};
 
